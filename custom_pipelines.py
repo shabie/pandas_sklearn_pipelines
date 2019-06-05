@@ -146,3 +146,76 @@ class SubsetDuplicateRemover(BaseEstimator, TransformerMixin):
         X = X.drop_duplicates(subset=self.subset_cols)
 
         return X
+
+
+class RowDropper(BaseEstimator, TransformerMixin):
+    """
+    Drops rows based on given conditions. Note: Most of the conditions apply only to text columns
+    """
+
+    def __init__(self, col_names, condition_equals=None, str_condition_contains=None, inverted=False, regex=False):
+
+        self.col_names = col_names
+        self.condition_equals = condition_equals
+        self.inverted = inverted
+        self.str_condition_contains = str_condition_contains
+        self.regex = regex
+
+    def fit(self, X=None, y=None):
+
+        return self
+
+    def transform(self, X, y=None):
+
+        if self.condition_equals:
+
+            if type(self.col_names) == list:
+
+                for col in self.col_names:
+
+                    if self.inverted:  # if inverted keep the records where condition matches
+
+                        X[col] = X[col].str.strip()  # removing extra spaces so the condition is not missed
+
+                        X = X[X[col] == self.condition_equals]
+                    else:
+
+                        X[col] = X[col].str.strip()  # removing extra spaces so the condition is not missed
+
+                        X = X[X[col] != self.condition_equals]
+
+            else:
+
+                if self.inverted:  # if inverted keep the records where condition matches
+
+                    X = X[X[self.col_names] == self.condition_equals]
+
+                else:
+
+                    X = X[(X[self.col_names] != self.condition_equals)]
+
+        elif self.str_condition_contains:
+
+            if type(self.col_names) == list:
+
+                for col in self.col_names:
+
+                    if self.inverted:  # if inverted keep the records where condition matches
+
+                        X = X[(X[col].astype(str).str.contains(self.str_condition_contains, regex=self.regex))]
+                    else:
+
+                        # print(self.condition_equals)
+                        X = X[~(X[col].astype(str).str.contains(self.str_condition_contains, regex=self.regex))]
+
+            else:
+
+                if self.inverted:  # if inverted keep the records where condition matches
+
+                    X = X[(X[self.col_names].astype(str).str.contains(self.str_condition_contains, regex=self.regex))]
+
+                else:
+
+                    X = X[~(X[self.col_names].astype(str).str.contains(self.str_condition_contains, regex=self.regex))]
+
+        return X
