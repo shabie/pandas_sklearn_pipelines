@@ -1,0 +1,1 @@
+# Some classes that play well with the scikit-learn pipelines using pandas DataFrame
