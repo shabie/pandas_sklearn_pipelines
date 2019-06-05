@@ -1,3 +1,6 @@
+from sklearn.base import TransformerMixin, BaseEstimator
+
+
 class NaNFiller(BaseEstimator, TransformerMixin):
 
     """
