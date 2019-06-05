@@ -219,3 +219,32 @@ class RowDropper(BaseEstimator, TransformerMixin):
                     X = X[~(X[self.col_names].astype(str).str.contains(self.str_condition_contains, regex=self.regex))]
 
         return X
+
+
+class NumericDTypeOptimizer(BaseEstimator, TransformerMixin):
+
+    """
+    Converts floats and ints to lower preicsion to make the DataFrame smaller for faster computations
+    """
+
+    def __init__(self, obj_cols_to_int=None, obj_cols_to_float=None):
+        self.obj_cols_to_int = obj_cols_to_int
+        self.obj_cols_to_float = obj_cols_to_float
+
+    def fit(self, X, y=None):
+
+        return self
+
+    def transform(self, X, y=None):
+
+        if self.obj_cols_to_int is not None:
+
+            for col in self.obj_cols_to_int:
+                X[col] = X[col].astype("int16")
+
+        if self.obj_cols_to_float is not None:
+
+            for col in self.obj_cols_to_float:
+                X[col] = X[col].astype("float32")
+
+        return X
