@@ -248,3 +248,35 @@ class NumericDTypeOptimizer(BaseEstimator, TransformerMixin):
                 X[col] = X[col].astype("float32")
 
         return X
+
+class EqualityChecker(BaseEstimator, TransformerMixin):
+
+    """
+    Checks if two column values are equal within the DataFrame. Can be used a feature.
+    """
+
+    def __init__(self, col_name_pairs, new_col_names, drop_originals=False):
+        self.col_name_pairs = col_name_pairs
+        self.new_col_names = new_col_names
+        self.drop_originals = drop_originals
+
+        assert len(self.col_name_pairs) == len(self.new_col_names), "Column names and column pairs in different numbers"
+
+    def fit(self, X=None, y=None):
+        return self
+
+    def transform(self, X, y=None):
+
+        for idx, (col_a, col_b) in enumerate(self.col_name_pairs):
+            new_col_name = self.new_col_names[idx]
+
+            X[new_col_name] = (X[col_a] == X[col_b])
+
+        if self.drop_originals:
+            cols_to_be_deleted = list(set(sum(self.col_name_pairs, ())))
+
+            X.drop(cols_to_be_deleted, axis=1, inplace=True)
+
+            gc.collect()
+
+        return X
