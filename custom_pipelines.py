@@ -57,3 +57,31 @@ class SubstringReplacer(BaseEstimator, TransformerMixin):
             X[self.columns] = X[self.columns].astype(str).str.replace(self.to_replace, self.replacement)
 
         return X
+
+class CharPadder(BaseEstimator, TransformerMixin):
+
+    '''
+    Class that's a wrapper around the pad function of pandas so it can be used in Pipelines
+    '''
+
+    def __init__(self, column, width, side='left', fillchar="0"):
+        self.col_name = column
+        self.width = width
+        self.side = side.lower()
+        self.fillchar = fillchar
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+
+        if type(self.col_name) == list:
+
+            for col_name in self.col_name:
+                X[col_name] = X[col_name].astype(str).str.pad(width=self.width, side=self.side, fillchar=self.fillchar)
+
+        else:
+            X[self.col_name] = X[self.col_name].astype(str).str.pad(width=self.width, side=self.side,
+                                                                    fillchar=self.fillchar)
+
+        return X
