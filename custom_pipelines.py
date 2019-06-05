@@ -112,3 +112,20 @@ class FunctionApplyer(BaseEstimator, TransformerMixin):
             X[self.columns] = X[self.columns].apply(self.func)
 
         return X
+
+class ColumnRenamer(BaseEstimator, TransformerMixin):
+
+    """
+    Renames columns with a dictionary
+    """
+
+    def __init__(self, rename_dict):
+        self.rename_dict = rename_dict
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        X = X.rename(columns=self.rename_dict)
+
+        return X
