@@ -129,3 +129,20 @@ class ColumnRenamer(BaseEstimator, TransformerMixin):
         X = X.rename(columns=self.rename_dict)
 
         return X
+
+class SubsetDuplicateRemover(BaseEstimator, TransformerMixin):
+
+    """
+    Drop duplicates based on a subset of columns
+    """
+
+    def __init__(self, subset_column_lst):
+        self.subset_cols = subset_column_lst
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        X = X.drop_duplicates(subset=self.subset_cols)
+
+        return X
