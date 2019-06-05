@@ -85,3 +85,30 @@ class CharPadder(BaseEstimator, TransformerMixin):
                                                                     fillchar=self.fillchar)
 
         return X
+
+
+class FunctionApplyer(BaseEstimator, TransformerMixin):
+
+    '''
+    Class that's a wrapper around the apply function of pandas so it can be used in Pipelines
+    '''
+
+    def __init__(self, func, columns):
+
+        self.func = func
+        self.columns = columns
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+
+        if type(self.columns) == list:  # I think may be isinstance works better
+
+            for col in self.columns:
+                X[col] = X[col].apply(self.func)
+        else:
+
+            X[self.columns] = X[self.columns].apply(self.func)
+
+        return X
